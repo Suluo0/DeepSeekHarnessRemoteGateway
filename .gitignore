@@ -2,5 +2,11 @@ node_modules/
 runtime/*
 !runtime/.gitkeep
 dist/
+release-assets/
+vendor/cloudflared/windows-x64/cloudflared.exe
+vendor/cloudflared/macos-arm64/cloudflared
+vendor/cloudflared/macos-amd64/cloudflared
+vendor/cloudflared/linux-amd64/cloudflared
+vendor/cloudflared/linux-arm64/cloudflared
 *.log
 *.err.log

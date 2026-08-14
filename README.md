@@ -4,7 +4,7 @@
 
 轻量 sidecar、启动即生成随机公网地址、默认随机 6 位密码、自动输出二维码。
 
-[安装说明](./INSTALL.md) | [常见问题](./FAQ.md) | [发布检查清单](./RELEASE_CHECKLIST.md) | [许可证](./LICENSE)
+[安装说明](./INSTALL.md) | [常见问题](./FAQ.md) | [发布检查清单](./RELEASE_CHECKLIST.md) | [Release 附件策略](./RELEASE_ASSETS.md) | [许可证](./LICENSE)
 
 ## 项目简介
 
@@ -68,6 +68,7 @@
 - 手机只需浏览器
 - 支持 Windows、macOS、Linux
 - 可按平台生成自带 `cloudflared` 的发布包
+- 支持把 macOS / Linux 版本作为 GitHub Release 附件分发
 
 ## 默认行为
 
@@ -262,6 +263,7 @@ npm run doctor
 - `remote-gateway/INSTALL.md` 提供首次安装步骤
 - `remote-gateway/FAQ.md` 提供常见问题答案
 - `remote-gateway/RELEASE_CHECKLIST.md` 提供发布前检查项
+- `remote-gateway/RELEASE_ASSETS.md` 说明了 GitHub Release 附件策略
 
 ## 发布到 GitHub / topics/dsh-plugin
 
@@ -270,8 +272,10 @@ npm run doctor
 1. 保持 `README.md`、`INSTALL.md`、`FAQ.md` 一起发布。
 2. 保持启动脚本文件名稳定，不要频繁变更。
 3. 发布前先跑一次 `npm run doctor`。
-4. 决定 `cloudflared` 是随仓库分发，还是作为外部依赖说明安装。
+4. Windows 版本可继续保留仓库内 `bin/cloudflared.exe`。
+5. macOS / Linux 版本推荐走 GitHub Release 附件，不直接提交二进制到主分支。
 5. 如果要按平台发包，执行 `npm run release:bundle -- <target>`。
+6. 如果要上传附件，执行 `npm run release:assets -- <target>`。
 
 ### 支持的发布目标
 
@@ -286,12 +290,20 @@ npm run doctor
 ```bash
 npm run release:bundle -- windows-x64
 npm run release:bundle -- --all --allow-missing
+npm run release:assets -- macos-arm64
+npm run release:assets -- --all
 ```
 
 生成的分发目录位于：
 
 ```text
 remote-gateway/dist/
+```
+
+生成的 Release 附件位于：
+
+```text
+remote-gateway/release-assets/
 ```
 
 ## 仓库结构
@@ -304,6 +316,7 @@ remote-gateway/dist/
 - `INSTALL.md` 安装说明
 - `FAQ.md` 常见问题
 - `RELEASE_CHECKLIST.md` 发布检查清单
+- `RELEASE_ASSETS.md` GitHub Release 附件说明
 
 ## 健康检查接口
 

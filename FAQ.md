@@ -57,3 +57,11 @@
 ## 发布时可以把 `cloudflared` 一起打进包里吗？
 
 可以。当前已经支持按平台生成发布包，并把对应的 `cloudflared` 复制到每个平台包内的 `bin/` 目录。
+
+## Linux 和 macOS 的 `cloudflared` 一定要提交到仓库吗？
+
+不一定。当前推荐策略是：
+
+- Windows 版本可以继续保留在仓库里
+- Linux 和 macOS 二进制不提交到主分支
+- Linux 和 macOS 版本改为通过 GitHub Release 附件分发

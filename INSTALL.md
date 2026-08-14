@@ -58,6 +58,14 @@ remote-gateway/vendor/cloudflared/<target>/
 npm run release:bundle -- <target>
 ```
 
+如果你不想把 macOS/Linux 的二进制直接放在仓库主分支里，推荐继续执行：
+
+```bash
+npm run release:assets -- <target>
+```
+
+这样会把已经生成好的平台目录压成 zip，适合上传到 GitHub Release 附件。
+
 ## 3. 运行自检
 
 ```bash
