@@ -1,0 +1,28 @@
+{
+  "server": {
+    "bindAddress": "127.0.0.1",
+    "bindPort": 8787
+  },
+  "upstream": {
+    "origin": "http://127.0.0.1:3080",
+    "loopbackMode": null
+  },
+  "auth": {
+    "password": null,
+    "sessionSecret": null,
+    "cookieName": "dsh_remote_session",
+    "sessionTtlHours": 168,
+    "secureCookies": false
+  },
+  "dsh": {
+    "command": null
+  },
+  "tunnel": {
+    "enabled": true,
+    "mode": "quick",
+    "cloudflaredPath": null
+  },
+  "share": {
+    "openOnStart": true
+  }
+}

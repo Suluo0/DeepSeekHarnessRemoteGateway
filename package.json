@@ -1,0 +1,19 @@
+{
+  "name": "dsh-remote-gateway",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "bootstrap": "node scripts/start.js",
+    "doctor": "node scripts/doctor.js",
+    "release:bundle": "node scripts/release-bundle.js",
+    "start": "node src/index.js",
+    "dev": "node src/index.js"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4"
+  }
+}
