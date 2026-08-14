@@ -29,9 +29,9 @@
 
 ## 项目简介
 
-`DSH Remote Gateway` 是一个围绕 `DeepSeek Harness Web` 的轻量 sidecar 网关。
+让`DeepSeek Harness` 可以手机远程访问、操作的轻量 sidecar 网关。
 
-它的目标不是重做一套移动端 UI，而是在保留 DeepSeek Harness 现有 Web UI 的前提下，为本地运行中的 DSH 增加一层远程访问能力：
+在保留 DeepSeek Harness 现有 Web UI 的前提下，为本地运行中的 DSH 增加一层远程访问能力：
 
 - 启动后自动生成随机公网 URL
 - 默认自动生成随机 6 位密码
@@ -279,48 +279,6 @@ npm run doctor
 - `remote-gateway/RELEASE_CHECKLIST.md` 提供发布前检查项
 - `remote-gateway/RELEASE_ASSETS.md` 说明 GitHub Release 附件策略
 - `remote-gateway/RELEASE_TEMPLATE.md` 提供 GitHub Release 文案模板
-
-## 发布到 GitHub / topics/dsh-plugin
-
-如果准备将项目发布到 `topics/dsh-plugin`，推荐至少完成以下步骤：
-
-1. 保持 `README.md`、`INSTALL.md`、`FAQ.md` 一起发布。
-2. 保持启动脚本文件名稳定，不要频繁变更。
-3. 发布前先跑一次 `npm run doctor`。
-4. Windows 版本可继续保留仓库内 `bin/cloudflared.exe`。
-5. macOS / Linux 版本推荐走 GitHub Release 附件，不直接提交二进制到主分支。
-6. 如果要按平台发包，执行 `npm run release:bundle -- <target>`。
-7. 如果要上传附件，执行 `npm run release:assets -- <target>`。
-8. 发布 GitHub Release 时，可直接参考 `RELEASE_TEMPLATE.md`。
-
-### 支持的发布目标
-
-- `windows-x64`
-- `macos-arm64`
-- `macos-amd64`
-- `linux-amd64`
-- `linux-arm64`
-
-### 发布包命令
-
-```bash
-npm run release:bundle -- windows-x64
-npm run release:bundle -- --all --allow-missing
-npm run release:assets -- macos-arm64
-npm run release:assets -- --all
-```
-
-生成的分发目录位于：
-
-```text
-remote-gateway/dist/
-```
-
-生成的 Release 附件位于：
-
-```text
-remote-gateway/release-assets/
-```
 
 ## 仓库结构
 
