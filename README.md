@@ -4,7 +4,7 @@
 
 轻量 sidecar、启动即生成随机公网地址、默认随机 6 位密码、自动输出二维码。
 
-[安装说明](./INSTALL.md) | [常见问题](./FAQ.md) | [发布检查清单](./RELEASE_CHECKLIST.md) | [Release 附件策略](./RELEASE_ASSETS.md) | [许可证](./LICENSE)
+[安装说明](./INSTALL.md) | [常见问题](./FAQ.md) | [发布检查清单](./RELEASE_CHECKLIST.md) | [Release 附件策略](./RELEASE_ASSETS.md) | [Release 文案模板](./RELEASE_TEMPLATE.md) | [许可证](./LICENSE)
 
 ## 项目简介
 
@@ -43,6 +43,10 @@
 - `docs/screenshots/phone-login.png`
 - `docs/screenshots/phone-chat.png`
 - `docs/screenshots/doctor-terminal.png`
+
+目录占位和说明见：
+
+- `docs/screenshots/README.md`
 
 截图准备好以后，可以在 README 中这样展示：
 
@@ -264,6 +268,7 @@ npm run doctor
 - `remote-gateway/FAQ.md` 提供常见问题答案
 - `remote-gateway/RELEASE_CHECKLIST.md` 提供发布前检查项
 - `remote-gateway/RELEASE_ASSETS.md` 说明了 GitHub Release 附件策略
+- `remote-gateway/RELEASE_TEMPLATE.md` 提供 GitHub Release 文案模板
 
 ## 发布到 GitHub / topics/dsh-plugin
 
@@ -276,6 +281,7 @@ npm run doctor
 5. macOS / Linux 版本推荐走 GitHub Release 附件，不直接提交二进制到主分支。
 5. 如果要按平台发包，执行 `npm run release:bundle -- <target>`。
 6. 如果要上传附件，执行 `npm run release:assets -- <target>`。
+7. 发布 GitHub Release 时，可直接参考 `RELEASE_TEMPLATE.md`。
 
 ### 支持的发布目标
 
@@ -313,10 +319,12 @@ remote-gateway/release-assets/
 - `bin/` 本地开发或直接运行时使用的 `cloudflared`
 - `vendor/cloudflared/` 按平台打包发布时使用的源二进制目录
 - `runtime/` 运行时生成的分享页和临时产物
+- `docs/screenshots/` 仓库首页和 Release 使用的截图目录
 - `INSTALL.md` 安装说明
 - `FAQ.md` 常见问题
 - `RELEASE_CHECKLIST.md` 发布检查清单
 - `RELEASE_ASSETS.md` GitHub Release 附件说明
+- `RELEASE_TEMPLATE.md` GitHub Release 文案模板
 
 ## 健康检查接口
 
