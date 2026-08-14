@@ -5,12 +5,12 @@
 - 确认 `remote-gateway/README.md` 与实际文件名一致
 - 确认 `remote-gateway/INSTALL.md` 在干净机器上也能走通
 - 确认至少有一台真实机器通过了 `npm run doctor`
-- 确认你计划发布的目标都能成功执行 `npm run release:bundle -- <target>`
-- 确认你计划上传附件的目标都能成功执行 `npm run release:assets -- <target>`
+- 确认计划发布的目标都能成功执行 `npm run release:bundle -- <target>`
+- 确认计划上传附件的目标都能成功执行 `npm run release:assets -- <target>`
 - 确认至少有一个 Windows 启动入口可用
 - 确认至少有一个 macOS 或 Linux 启动入口可用
 - 确认二维码流程仍然可以正常打开远程 DeepSeek Harness Web
-- 确认提交的 `config.json` 中，`auth.password` 是否符合你的默认发布策略
+- 确认提交的 `config.json` 中，`auth.password` 是否符合项目的默认发布策略
 - 确认没有把本地日志和运行时临时文件带进发布内容
 
 ## 推荐保留的发布文件

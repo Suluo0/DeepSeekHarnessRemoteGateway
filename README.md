@@ -1,78 +1,77 @@
-# DSH Remote Gateway
+<div align="center">
 
-在不修改 **DeepSeek Harness** 本体代码的前提下，把 **DeepSeek Harness Web** 变成一个可被手机远程访问的工作界面。
+<img src="docs/screenshots/banner.png" alt="DSH Remote Gateway banner" width="100%">
 
-轻量 sidecar、启动即生成随机公网地址、默认随机 6 位密码、自动输出二维码。
+<h1>DSH Remote Gateway</h1>
 
-[安装说明](./INSTALL.md) | [常见问题](./FAQ.md) | [发布检查清单](./RELEASE_CHECKLIST.md) | [Release 附件策略](./RELEASE_ASSETS.md) | [Release 文案模板](./RELEASE_TEMPLATE.md) | [许可证](./LICENSE)
+<p><strong>让 DeepSeek Harness Web 获得可被手机远程访问的能力</strong></p>
+
+<p>不修改 DeepSeek Harness 本体代码，默认生成随机公网 URL、随机 6 位密码和扫码二维码，手机端仅需浏览器即可访问。</p>
+
+<p>
+  <a href="./INSTALL.md">安装说明</a> ·
+  <a href="./FAQ.md">常见问题</a> ·
+  <a href="./RELEASE_CHECKLIST.md">发布检查清单</a> ·
+  <a href="./RELEASE_ASSETS.md">Release 附件策略</a> ·
+  <a href="./RELEASE_TEMPLATE.md">Release 文案模板</a> ·
+  <a href="./LICENSE">许可证</a>
+</p>
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![DeepSeek Harness](https://img.shields.io/badge/DeepSeek%20Harness-Plugin-4D6BFE)](https://github.com/topics/dsh-plugin)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-222222)](https://github.com/lbwnb666-ai/DeepSeekHarnessRemoteGateway)
+[![Cloudflare Tunnel](https://img.shields.io/badge/Cloudflare-Quick%20Tunnel-F38020?logo=cloudflare&logoColor=white)](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
+[![Release](https://img.shields.io/github/v/release/lbwnb666-ai/DeepSeekHarnessRemoteGateway)](https://github.com/lbwnb666-ai/DeepSeekHarnessRemoteGateway/releases)
+[![Stars](https://img.shields.io/github/stars/lbwnb666-ai/DeepSeekHarnessRemoteGateway?style=social)](https://github.com/lbwnb666-ai/DeepSeekHarnessRemoteGateway/stargazers)
+
+</div>
 
 ## 项目简介
 
-`DSH Remote Gateway` 是一个围绕 `DeepSeek Harness Web` 的轻量侧车服务。
+`DSH Remote Gateway` 是一个围绕 `DeepSeek Harness Web` 的轻量 sidecar 网关。
 
-它不修改 DeepSeek Harness 本体，而是在本地电脑旁边增加一层远程访问能力：
+它的目标不是重做一套移动端 UI，而是在保留 DeepSeek Harness 现有 Web UI 的前提下，为本地运行中的 DSH 增加一层远程访问能力：
 
 - 启动后自动生成随机公网 URL
 - 默认自动生成随机 6 位密码
 - 自动输出二维码，手机扫码即可访问
-- 手机端只需要浏览器，不需要安装 App
+- 支持 Windows、macOS、Linux
 - 适合临时远程访问、移动端查看和继续对话
-
-## 30 秒上手
-
-1. 先在本地启动 `dsh web`，并确认它可通过 `http://127.0.0.1:3080` 访问。
-2. 准备 `cloudflared`，放到 `remote-gateway/bin/`，或者确保系统 `PATH` 里可直接调用。
-3. 运行 `npm run doctor` 做一次环境检查。
-4. 根据你的平台启动 `start_Windows.bat`、`start.ps1`、`start_Mac_or_Linux.sh`、`start.sh` 或 `start.command`。
-5. 用手机扫描启动后生成的二维码，输入 6 位密码即可访问。
-
-更完整的安装和排障说明见 [INSTALL.md](./INSTALL.md)。
-
-## 截图建议
-
-如果后续要把它发到 GitHub 仓库首页，推荐至少准备这几张图：
-
-- 桌面端分享页，展示二维码、公网 URL 和 6 位密码
-- 手机登录页
-- 手机端 DeepSeek Harness 对话页
-- 可选：`doctor` 自检输出截图
-
-建议截图路径：
-
-- `docs/screenshots/share-screen.png`
-- `docs/screenshots/phone-login.png`
-- `docs/screenshots/phone-chat.png`
-- `docs/screenshots/doctor-terminal.png`
-
-目录占位和说明见：
-
-- `docs/screenshots/README.md`
-
-截图准备好以后，可以在 README 中这样展示：
-
-```md
-![分享页](docs/screenshots/share-screen.png)
-![手机登录页](docs/screenshots/phone-login.png)
-![手机对话页](docs/screenshots/phone-chat.png)
-```
 
 ## 为什么做这个
 
-- DeepSeek Harness 本身已经有成熟的 Web UI
-- 真正需要补的是“远程接入能力”，不是再造一个新前端
-- 对手机场景来说，最有价值的是远程继续任务，而不是维护第二套 UI
-- 这种 sidecar 形式更轻、更适合插件化复用，也更容易发布到 `topics/dsh-plugin`
+- DeepSeek Harness 本身已经有完整的 Web UI
+- 真正缺的是“远程接入能力”，不是第二套前端
+- 对移动端场景来说，更重要的是“继续任务”，而不是“重新设计界面”
+- sidecar 形态更轻、更适合插件化复用，也更容易发布到 `topics/dsh-plugin`
 
 ## 核心特点
 
 - 不修改 DeepSeek Harness 源码
 - 默认随机公网 URL
 - 默认随机 6 位密码
-- 二维码扫码进入
+- 默认输出二维码
 - 手机只需浏览器
-- 支持 Windows、macOS、Linux
-- 可按平台生成自带 `cloudflared` 的发布包
+- 支持 Cloudflare Quick Tunnel
+- 支持按平台生成发布包
 - 支持把 macOS / Linux 版本作为 GitHub Release 附件分发
+
+## 截图预览
+
+| 分享页 | 手机登录页 | 手机对话页 |
+| --- | --- | --- |
+| ![分享页](docs/screenshots/share-screen.png) | ![手机登录页](docs/screenshots/phone-login.png) | ![手机对话页](docs/screenshots/phone-chat.png) |
+
+## 30 秒上手
+
+1. 先在本地启动 `dsh web`，并确认它可通过 `http://127.0.0.1:3080` 访问。
+2. 准备 `cloudflared`，放到 `remote-gateway/bin/`，或者确保系统 `PATH` 中可直接调用。
+3. 运行 `npm run doctor` 做一次环境检查。
+4. 根据当前平台启动 `start_Windows.bat`、`start.ps1`、`start_Mac_or_Linux.sh`、`start.sh` 或 `start.command`。
+5. 用手机扫描启动后生成的二维码，输入 6 位密码即可访问。
+
+更完整的安装和排障说明见 [INSTALL.md](./INSTALL.md)。
 
 ## 默认行为
 
@@ -87,13 +86,24 @@
 
 这个默认流程非常适合插件分发场景：不需要固定域名、不需要公网 IP、也不需要改动 DSH 核心代码。
 
+## 当前限制
+
+### 工作区切换
+
+当前远程状态下，无法直接从手机端主动打开本地尚未打开的工作区。  
+如果需要切换工作区，仍然需要先在电脑端打开目标工作区，再从远程端继续访问和切换。
+
 ## 平台支持
 
 - Windows
 - macOS
 - Linux
 
-项目主体是纯 Node.js。平台相关的主要差异只在 `cloudflared` 二进制和启动脚本上。
+项目主体是纯 Node.js。平台差异主要集中在：
+
+- `cloudflared` 二进制
+- 各平台启动脚本
+- 发布包分发方式
 
 ## 它能做什么
 
@@ -122,7 +132,7 @@ remote-gateway/config.json
 
 如果 `auth.password` 为 `null`，则每次启动都会生成一个新的随机 6 位密码。
 
-如果你想使用固定密码，直接在 `config.json` 中手动填写即可。
+如需使用固定密码，直接在 `config.json` 中手动填写即可。
 
 ## 配置示例
 
@@ -174,19 +184,19 @@ remote-gateway/config.json
 - Windows：`remote-gateway/bin/cloudflared.exe`
 - macOS/Linux：`remote-gateway/bin/cloudflared`
 
-如果本地 `bin/` 目录里没有对应文件，网关会回退到系统 `PATH` 中的 `cloudflared`。
+如果本地 `bin/` 目录中没有对应文件，网关会回退到系统 `PATH` 中的 `cloudflared`。
 
 你也可以在 `config.json` 或环境变量中显式指定 `cloudflaredPath`。
 
 ### macOS/Linux 说明
 
-如果你把二进制放到 `remote-gateway/bin/` 里，记得先赋予可执行权限：
+如果将二进制放到 `remote-gateway/bin/` 中，记得先赋予可执行权限：
 
 ```bash
 chmod +x remote-gateway/bin/cloudflared
 ```
 
-如果你的桌面环境没有 `xdg-open`，网关仍然可以正常启动，只是不会自动打开分享页，你可以手动打开输出的分享页路径。
+如果桌面环境没有 `xdg-open`，网关仍然可以正常启动，只是不会自动打开分享页，此时可手动打开输出的分享页路径。
 
 ## 环境变量覆盖
 
@@ -267,21 +277,21 @@ npm run doctor
 - `remote-gateway/INSTALL.md` 提供首次安装步骤
 - `remote-gateway/FAQ.md` 提供常见问题答案
 - `remote-gateway/RELEASE_CHECKLIST.md` 提供发布前检查项
-- `remote-gateway/RELEASE_ASSETS.md` 说明了 GitHub Release 附件策略
+- `remote-gateway/RELEASE_ASSETS.md` 说明 GitHub Release 附件策略
 - `remote-gateway/RELEASE_TEMPLATE.md` 提供 GitHub Release 文案模板
 
 ## 发布到 GitHub / topics/dsh-plugin
 
-如果你准备把它发布到 `topics/dsh-plugin`，推荐最少做这几步：
+如果准备将项目发布到 `topics/dsh-plugin`，推荐至少完成以下步骤：
 
 1. 保持 `README.md`、`INSTALL.md`、`FAQ.md` 一起发布。
 2. 保持启动脚本文件名稳定，不要频繁变更。
 3. 发布前先跑一次 `npm run doctor`。
 4. Windows 版本可继续保留仓库内 `bin/cloudflared.exe`。
 5. macOS / Linux 版本推荐走 GitHub Release 附件，不直接提交二进制到主分支。
-5. 如果要按平台发包，执行 `npm run release:bundle -- <target>`。
-6. 如果要上传附件，执行 `npm run release:assets -- <target>`。
-7. 发布 GitHub Release 时，可直接参考 `RELEASE_TEMPLATE.md`。
+6. 如果要按平台发包，执行 `npm run release:bundle -- <target>`。
+7. 如果要上传附件，执行 `npm run release:assets -- <target>`。
+8. 发布 GitHub Release 时，可直接参考 `RELEASE_TEMPLATE.md`。
 
 ### 支持的发布目标
 

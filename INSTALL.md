@@ -1,6 +1,6 @@
 # 安装说明
 
-这份文档适合第一次从干净目录启动 `DSH Remote Gateway` 的用户。
+这份文档适合首次从干净目录启动 `DSH Remote Gateway` 的场景。
 
 ## 前置条件
 
@@ -16,7 +16,7 @@
 http://127.0.0.1:3080
 ```
 
-如果你的 `dsh web` 不是这个端口，请修改 `config.json`。
+如果 `dsh web` 不使用这个端口，请修改 `config.json`。
 
 ## 1. 先检查配置文件
 
@@ -46,7 +46,7 @@ remote-gateway/config.json
 
 - 确保命令行里可以直接执行 `cloudflared`
 
-如果你要做“按平台发布包”，请把平台二进制放到：
+如果需要按平台生成发布包，请把对应平台二进制放到：
 
 ```text
 remote-gateway/vendor/cloudflared/<target>/
@@ -58,7 +58,7 @@ remote-gateway/vendor/cloudflared/<target>/
 npm run release:bundle -- <target>
 ```
 
-如果你不想把 macOS/Linux 的二进制直接放在仓库主分支里，推荐继续执行：
+如果不希望把 macOS/Linux 的二进制直接放在仓库主分支里，推荐继续执行：
 
 ```bash
 npm run release:assets -- <target>
@@ -72,7 +72,7 @@ npm run release:assets -- <target>
 npm run doctor
 ```
 
-理想状态下，你应该看到这些检查通过：
+理想状态下，应看到以下检查通过：
 
 - Node.js 版本正常
 - `config.json` 能正确读取
@@ -81,7 +81,7 @@ npm run doctor
 
 ## 4. 启动网关
 
-根据你的平台选择一个入口：
+根据当前平台选择一个启动入口：
 
 - Windows 资源管理器：`start_Windows.bat`
 - Windows 兼容别名：`start.bat`
@@ -101,7 +101,7 @@ npm run doctor
 - 一份终端二维码
 - 一个本地分享页路径
 
-如果桌面自动打开成功，你可以直接用手机扫描分享页上的二维码进入。
+如果桌面自动打开成功，可直接用手机扫描分享页上的二维码进入。
 
 ## 常见首启问题
 
