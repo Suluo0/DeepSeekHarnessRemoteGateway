@@ -1,17 +1,17 @@
-# `bin/` directory
+# `bin/` 目录说明
 
-Place platform-specific `cloudflared` binaries here if you want the gateway to use a local bundled copy instead of your system `PATH`.
+如果你希望网关优先使用项目内自带的 `cloudflared`，就把对应平台的二进制放在这个目录下。
 
-Expected filenames:
+推荐文件名：
 
-- Windows: `cloudflared.exe`
-- macOS / Linux: `cloudflared`
+- Windows：`cloudflared.exe`
+- macOS / Linux：`cloudflared`
 
-Notes:
+补充说明：
 
-- If `config.json` leaves `tunnel.cloudflaredPath` as `null`, the gateway first checks this folder.
-- If nothing is found here, it falls back to `cloudflared` from `PATH`.
-- On macOS/Linux, remember to make the binary executable:
+- 当 `config.json` 中的 `tunnel.cloudflaredPath` 为 `null` 时，网关会优先检查这个目录
+- 如果这里没有找到可用文件，网关会回退到系统 `PATH` 中的 `cloudflared`
+- 在 macOS/Linux 上，记得先赋予可执行权限：
 
 ```bash
 chmod +x remote-gateway/bin/cloudflared

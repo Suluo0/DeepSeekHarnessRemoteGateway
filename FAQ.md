@@ -1,26 +1,26 @@
-# FAQ
+# 常见问题
 
-## Do I need to modify DeepSeek Harness?
+## 需要修改 DeepSeek Harness 本体吗？
 
-No. This gateway is designed as a sidecar. It proxies DeepSeek Harness Web without editing DeepSeek Harness source code.
+不需要。这个网关是 sidecar 形态，它通过代理 DeepSeek Harness Web 来提供远程访问能力，不会修改 DeepSeek Harness 的源码。
 
-## Do I need a public IP or my own domain?
+## 必须有公网 IP 或自己的域名吗？
 
-No for the default workflow. Quick Tunnel can provide a random temporary public URL.
+默认方案不需要。Quick Tunnel 会提供一个随机的临时公网地址。
 
-## Do I need my own cloud service?
+## 必须有自己的云服务吗？
 
-No for basic usage. The default path is lightweight and self-hosted on the local machine.
+基础使用不需要。默认方案是本地自托管，只是在本机上额外起一个网关和隧道。
 
-## Why is the password different every time?
+## 为什么每次启动密码都不一样？
 
-Because `config.json` defaults `auth.password` to `null`. In that mode, every launch generates a fresh random 6-digit password.
+因为 `config.json` 默认把 `auth.password` 设为 `null`。在这个模式下，每次启动都会生成新的随机 6 位密码。
 
-If you want a fixed password, write it into `config.json`.
+如果你想固定密码，直接在 `config.json` 里写死即可。
 
-## Can I disable the tunnel and use local-only mode?
+## 可以关闭隧道，只在本地使用吗？
 
-Yes. Set:
+可以。把配置改成：
 
 ```json
 {
@@ -30,9 +30,9 @@ Yes. Set:
 }
 ```
 
-## What if my `dsh web` is not on port `3080`?
+## 如果我的 `dsh web` 不在 `3080` 端口怎么办？
 
-Change:
+把配置改成你的真实端口，例如：
 
 ```json
 {
@@ -42,14 +42,18 @@ Change:
 }
 ```
 
-## Why does the phone page still ask for a password after I scanned the QR code?
+## 为什么手机扫了二维码以后，还是要输入密码？
 
-That is expected. The QR code opens the public URL, and the gateway login page protects access before forwarding to DeepSeek Harness Web.
+这是正常设计。二维码只负责打开公网访问地址，真正进入 DeepSeek Harness Web 之前，网关会先走一层登录页保护。
 
-## Can I bundle `cloudflared` inside the repo?
+## 可以把 `cloudflared` 直接放进仓库里吗？
 
-Yes. Put it in `remote-gateway/bin/`. See `remote-gateway/bin/README.md`.
+可以。直接放到 `remote-gateway/bin/` 即可，具体规则见 `remote-gateway/bin/README.md`。
 
-## Can I run this on macOS and Linux?
+## 支持 macOS 和 Linux 吗？
 
-Yes. Use `start_Mac_or_Linux.sh`, `start.sh`, or `start.command` depending on your platform and launch style.
+支持。根据平台选择 `start_Mac_or_Linux.sh`、`start.sh` 或 `start.command` 即可。
+
+## 发布时可以把 `cloudflared` 一起打进包里吗？
+
+可以。当前已经支持按平台生成发布包，并把对应的 `cloudflared` 复制到每个平台包内的 `bin/` 目录。

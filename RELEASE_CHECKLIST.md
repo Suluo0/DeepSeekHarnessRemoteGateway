@@ -1,20 +1,18 @@
-# Release Checklist
+# 发布检查清单
 
-## Before publishing
+## 发布前确认
 
-- Confirm `remote-gateway/README.md` matches the actual filenames in the folder
-- Confirm `remote-gateway/INSTALL.md` works from a clean machine
-- Confirm `npm run doctor` passes on at least one real machine
-- Confirm `npm run release:bundle -- <target>` succeeds for each target you plan to publish
-- Confirm one launcher works on Windows
-- Confirm one launcher works on macOS or Linux
-- Confirm the generated QR flow still opens the DeepSeek Harness Web UI remotely
-- Confirm `auth.password` is `null` in the committed `config.json` if random password is the intended default
-- Confirm no local logs or runtime artifacts are staged for release
+- 确认 `remote-gateway/README.md` 与实际文件名一致
+- 确认 `remote-gateway/INSTALL.md` 在干净机器上也能走通
+- 确认至少有一台真实机器通过了 `npm run doctor`
+- 确认你计划发布的目标都能成功执行 `npm run release:bundle -- <target>`
+- 确认至少有一个 Windows 启动入口可用
+- 确认至少有一个 macOS 或 Linux 启动入口可用
+- 确认二维码流程仍然可以正常打开远程 DeepSeek Harness Web
+- 确认提交的 `config.json` 中，`auth.password` 是否符合你的默认发布策略
+- 确认没有把本地日志和运行时临时文件带进发布内容
 
-## Release contents
-
-Recommended files to keep:
+## 推荐保留的发布文件
 
 - `README.md`
 - `INSTALL.md`
@@ -26,16 +24,16 @@ Recommended files to keep:
 - `src/`
 - `scripts/`
 - `bin/README.md`
-- launchers: `start_Windows.bat`, `start.bat`, `start.ps1`, `start_Mac_or_Linux.sh`, `start.sh`, `start.command`
+- 启动器：`start_Windows.bat`、`start.bat`、`start.ps1`、`start_Mac_or_Linux.sh`、`start.sh`、`start.command`
 
-## Optional release choices
+## 可选发布策略
 
-- Include `cloudflared` in `bin/`
-- Keep `cloudflared` external and document download steps
-- Keep random password as default
-- Replace random password with a user-defined fixed password in `config.json`
+- 把 `cloudflared` 直接放进 `bin/`
+- 不内置 `cloudflared`，改为文档说明用户自行准备
+- 默认使用随机密码
+- 默认改成固定密码
 
-## Bundle commands
+## 打包命令
 
-- single target: `npm run release:bundle -- windows-x64`
-- all targets and skip missing binaries: `npm run release:bundle -- --all --allow-missing`
+- 单平台打包：`npm run release:bundle -- windows-x64`
+- 多平台打包并跳过缺失二进制：`npm run release:bundle -- --all --allow-missing`

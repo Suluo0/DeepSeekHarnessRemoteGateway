@@ -1,8 +1,8 @@
-# Bundled Cloudflared Sources
+# `vendor/cloudflared/` 目录说明
 
-This folder is for platform-specific `cloudflared` binaries that will be copied into release bundles.
+这个目录用于存放“按平台发布包”所需的 `cloudflared` 源二进制。
 
-Expected layout:
+推荐目录结构：
 
 ```text
 vendor/cloudflared/windows-x64/cloudflared.exe
@@ -12,8 +12,8 @@ vendor/cloudflared/linux-amd64/cloudflared
 vendor/cloudflared/linux-arm64/cloudflared
 ```
 
-Notes:
+补充说明：
 
-- source development can continue using `bin/cloudflared.exe` on Windows
-- release packaging prefers files in `vendor/cloudflared/<target>/`
-- each generated bundle will copy the matching binary into its own `bin/`
+- 本地开发时，仍然可以继续直接使用 `bin/cloudflared.exe`
+- 发布打包时，脚本会优先从 `vendor/cloudflared/<target>/` 读取对应平台文件
+- 每个平台生成的发布包，都会把匹配的 `cloudflared` 复制到它自己的 `bin/` 目录

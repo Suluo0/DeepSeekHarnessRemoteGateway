@@ -1,106 +1,116 @@
-# Installation Guide
+# 安装说明
 
-This guide is for people who want to run `DSH Remote Gateway` from a clean checkout.
+这份文档适合第一次从干净目录启动 `DSH Remote Gateway` 的用户。
 
-## What you need
+## 前置条件
 
-- DeepSeek Harness Web already running locally
-- Node.js 22+
-- `cloudflared`
-  - either placed in `remote-gateway/bin/`
-  - or installed in your system `PATH`
+- 本地已经启动 `DeepSeek Harness Web`
+- 已安装 `Node.js 22+`
+- 已准备 `cloudflared`
+  - 可以放在 `remote-gateway/bin/`
+  - 也可以安装到系统 `PATH`
 
-Default upstream:
+默认上游地址为：
 
 ```text
 http://127.0.0.1:3080
 ```
 
-If your `dsh web` uses another port, change `config.json`.
+如果你的 `dsh web` 不是这个端口，请修改 `config.json`。
 
-## 1. Prepare the folder
+## 1. 先检查配置文件
 
-Open:
+打开：
 
 ```text
 remote-gateway/config.json
 ```
 
-Check these values:
+重点确认以下字段：
 
 - `upstream.origin`
 - `tunnel.enabled`
 - `share.openOnStart`
 - `auth.password`
 
-If `auth.password` is `null`, startup will generate a random 6-digit password for that run.
+如果 `auth.password` 为 `null`，每次启动都会自动生成一个新的随机 6 位密码。
 
-## 2. Put `cloudflared` in place
+## 2. 准备 `cloudflared`
 
-Option A: bundled binary
+方式 A：直接放二进制到项目内
 
-- Windows: `remote-gateway/bin/cloudflared.exe`
-- macOS/Linux: `remote-gateway/bin/cloudflared`
+- Windows：`remote-gateway/bin/cloudflared.exe`
+- macOS/Linux：`remote-gateway/bin/cloudflared`
 
-Option B: global install
+方式 B：全局安装
 
-- make sure `cloudflared` is available in your shell `PATH`
+- 确保命令行里可以直接执行 `cloudflared`
 
-If you are preparing a platform release bundle, place platform binaries in:
+如果你要做“按平台发布包”，请把平台二进制放到：
 
 ```text
 remote-gateway/vendor/cloudflared/<target>/
 ```
 
-Then run:
+然后执行：
 
 ```bash
 npm run release:bundle -- <target>
 ```
 
-## 3. Run the doctor check
+## 3. 运行自检
 
 ```bash
 npm run doctor
 ```
 
-Expected result:
+理想状态下，你应该看到这些检查通过：
 
-- Node.js passes
-- config loads
-- upstream is reachable
-- `cloudflared` is found
+- Node.js 版本正常
+- `config.json` 能正确读取
+- 上游 DSH 可访问
+- `cloudflared` 能被发现
 
-## 4. Start the gateway
+## 4. 启动网关
 
-Choose one:
+根据你的平台选择一个入口：
 
-- Windows Explorer: `start_Windows.bat`
-- Windows compatibility alias: `start.bat`
-- PowerShell: `start.ps1`
-- macOS/Linux terminal: `./start_Mac_or_Linux.sh`
-- macOS/Linux compatibility alias: `./start.sh`
-- macOS Finder: `start.command`
+- Windows 资源管理器：`start_Windows.bat`
+- Windows 兼容别名：`start.bat`
+- PowerShell：`start.ps1`
+- macOS/Linux 终端：`./start_Mac_or_Linux.sh`
+- macOS/Linux 兼容别名：`./start.sh`
+- macOS Finder：`start.command`
 
-On first launch, the starter auto-installs missing npm dependencies.
+首次启动时，如果缺少 npm 依赖，启动器会自动执行安装。
 
-## 5. Open on your phone
+## 5. 在手机端访问
 
-After startup, the gateway prints:
+启动成功后，网关会输出：
 
-- a temporary public URL
-- a 6-digit password
-- a terminal QR code
-- a local share page path
+- 一个临时公网 URL
+- 一个 6 位密码
+- 一份终端二维码
+- 一个本地分享页路径
 
-If desktop auto-open works, you can scan the QR code directly from the generated share page.
+如果桌面自动打开成功，你可以直接用手机扫描分享页上的二维码进入。
 
-## Common first-run issues
+## 常见首启问题
 
-- `Node.js 22+ was not found in PATH`
-  - install Node.js 22 or newer
-- `cloudflared not found`
-  - put the binary in `bin/` or install it globally
-- upstream probe failed
-  - confirm `dsh web` is already running
-  - confirm `upstream.origin` matches the real local address
+### 提示 `Node.js 22+ was not found in PATH`
+
+说明本机没有可用的 Node.js，安装 `Node.js 22` 或更高版本后再试。
+
+### 提示 `cloudflared not found`
+
+说明网关没有找到 `cloudflared`：
+
+- 要么把文件放到 `bin/`
+- 要么安装到系统 `PATH`
+
+### 上游探测失败
+
+说明网关访问不到 DSH：
+
+- 确认 `dsh web` 已经启动
+- 确认 `upstream.origin` 配置的是正确的本地地址和端口

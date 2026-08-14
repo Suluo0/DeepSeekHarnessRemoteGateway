@@ -1,17 +1,16 @@
 # DSH Remote Gateway
 
-Turn **DeepSeek Harness Web** into a phone-accessible remote workspace without modifying DeepSeek Harness itself.
+在不修改 **DeepSeek Harness** 本体代码的前提下，把 **DeepSeek Harness Web** 变成一个可被手机远程访问的工作界面。
 
-Lightweight sidecar. Random public URL. Random 6-digit password. QR code on startup.
+轻量 sidecar、启动即生成随机公网地址、默认随机 6 位密码、自动输出二维码。
 
-[Installation](./INSTALL.md) • [FAQ](./FAQ.md) • [Release Checklist](./RELEASE_CHECKLIST.md) • [License](./LICENSE)
+[安装说明](./INSTALL.md) | [常见问题](./FAQ.md) | [发布检查清单](./RELEASE_CHECKLIST.md) | [许可证](./LICENSE)
 
-## Overview
+## 项目简介
 
-**中文**
+`DSH Remote Gateway` 是一个围绕 `DeepSeek Harness Web` 的轻量侧车服务。
 
-`DSH Remote Gateway` 是一个面向 `DeepSeek Harness Web` 的轻量 sidecar。
-它不改动 DeepSeek Harness 本体，只在本地电脑旁边增加一层远程访问能力：
+它不修改 DeepSeek Harness 本体，而是在本地电脑旁边增加一层远程访问能力：
 
 - 启动后自动生成随机公网 URL
 - 默认自动生成随机 6 位密码
@@ -19,119 +18,108 @@ Lightweight sidecar. Random public URL. Random 6-digit password. QR code on star
 - 手机端只需要浏览器，不需要安装 App
 - 适合临时远程访问、移动端查看和继续对话
 
-**English**
+## 30 秒上手
 
-`DSH Remote Gateway` is a lightweight sidecar for `DeepSeek Harness Web`.
-It does not patch DeepSeek Harness. Instead, it adds a thin remote-access layer beside your local DSH session:
+1. 先在本地启动 `dsh web`，并确认它可通过 `http://127.0.0.1:3080` 访问。
+2. 准备 `cloudflared`，放到 `remote-gateway/bin/`，或者确保系统 `PATH` 里可直接调用。
+3. 运行 `npm run doctor` 做一次环境检查。
+4. 根据你的平台启动 `start_Windows.bat`、`start.ps1`、`start_Mac_or_Linux.sh`、`start.sh` 或 `start.command`。
+5. 用手机扫描启动后生成的二维码，输入 6 位密码即可访问。
 
-- generates a random public URL on startup
-- generates a random 6-digit password by default
-- prints a QR code for instant phone access
-- works in a browser, no mobile app required
-- ideal for temporary remote access and mobile follow-up
+更完整的安装和排障说明见 [INSTALL.md](./INSTALL.md)。
 
-## 30-Second Quick Start
+## 截图建议
 
-1. Start `dsh web` locally and make sure it is reachable at `http://127.0.0.1:3080`.
-2. Put `cloudflared` in `remote-gateway/bin/` or make sure it is available in your `PATH`.
-3. Run `npm run doctor`.
-4. Launch `start_Windows.bat`, `start.ps1`, `start_Mac_or_Linux.sh`, `start.sh`, or `start.command`.
-5. Scan the generated QR code on your phone and enter the 6-digit password.
+如果后续要把它发到 GitHub 仓库首页，推荐至少准备这几张图：
 
-Detailed setup is in `INSTALL.md`.
+- 桌面端分享页，展示二维码、公网 URL 和 6 位密码
+- 手机登录页
+- 手机端 DeepSeek Harness 对话页
+- 可选：`doctor` 自检输出截图
 
-## Screenshots
-
-Recommended screenshot set for the GitHub homepage:
-
-- desktop share screen showing the QR code, public URL, and 6-digit password
-- phone login page
-- phone-side DeepSeek Harness conversation view
-- optional doctor output in terminal
-
-Suggested asset paths if you want to add images later:
+建议截图路径：
 
 - `docs/screenshots/share-screen.png`
 - `docs/screenshots/phone-login.png`
 - `docs/screenshots/phone-chat.png`
 - `docs/screenshots/doctor-terminal.png`
 
-Example section after assets are ready:
+截图准备好以后，可以在 README 中这样展示：
 
 ```md
-![Share Screen](docs/screenshots/share-screen.png)
-![Phone Login](docs/screenshots/phone-login.png)
-![Phone Chat](docs/screenshots/phone-chat.png)
+![分享页](docs/screenshots/share-screen.png)
+![手机登录页](docs/screenshots/phone-login.png)
+![手机对话页](docs/screenshots/phone-chat.png)
 ```
 
-## Why This Exists
+## 为什么做这个
 
-- DeepSeek Harness already has a strong Web UI.
-- For phone access, rebuilding a separate cockpit UI is unnecessary.
-- The practical value is remote continuation of work, not a second frontend.
-- This gateway keeps the solution lightweight, reusable, and plugin-friendly.
+- DeepSeek Harness 本身已经有成熟的 Web UI
+- 真正需要补的是“远程接入能力”，不是再造一个新前端
+- 对手机场景来说，最有价值的是远程继续任务，而不是维护第二套 UI
+- 这种 sidecar 形式更轻、更适合插件化复用，也更容易发布到 `topics/dsh-plugin`
 
-## Highlights
+## 核心特点
 
-- no DeepSeek Harness source modification
-- random public URL by default
-- random password by default
-- QR-based phone entry
-- browser-only mobile access
-- Windows, macOS, and Linux support
-- optional per-platform release bundles with bundled `cloudflared`
+- 不修改 DeepSeek Harness 源码
+- 默认随机公网 URL
+- 默认随机 6 位密码
+- 二维码扫码进入
+- 手机只需浏览器
+- 支持 Windows、macOS、Linux
+- 可按平台生成自带 `cloudflared` 的发布包
 
-## Default behavior
+## 默认行为
 
-On normal startup, the gateway now does all of this automatically:
+正常启动后，网关会自动完成以下动作：
 
-- starts the local HTTP gateway on `127.0.0.1:8787`
-- creates a **random 6-digit password** when no password is configured
-- starts a **Cloudflare Quick Tunnel** when `cloudflared` is available
-- prints the temporary public URL, password, and a terminal QR code
-- generates a local share card at `runtime/share.html`
-- opens that share card on your desktop by default
+- 在 `127.0.0.1:8787` 启动本地 HTTP 网关
+- 当未配置密码时，自动生成随机 6 位密码
+- 当 `cloudflared` 可用时，自动启动 Cloudflare Quick Tunnel
+- 在终端打印临时公网 URL、密码和二维码
+- 在 `runtime/share.html` 生成本地分享页
+- 默认自动在桌面打开这个分享页
 
-This is optimized for the plugin use case: no fixed domain, no public IP, no DSH core changes.
+这个默认流程非常适合插件分发场景：不需要固定域名、不需要公网 IP、也不需要改动 DSH 核心代码。
 
-## Platform support
+## 平台支持
 
 - Windows
 - macOS
 - Linux
 
-The gateway itself is plain Node.js. The only platform-sensitive dependency is `cloudflared`.
+项目主体是纯 Node.js。平台相关的主要差异只在 `cloudflared` 二进制和启动脚本上。
 
-## What it does
+## 它能做什么
 
-- serves a small login page
-- issues an `HttpOnly` cookie session
-- reverse-proxies the Harness Web UI
-- forwards `/api/*`
-- forwards the two Harness WebSocket downlinks:
+- 提供一个简单的登录页
+- 通过 `HttpOnly` Cookie 维护会话
+- 反向代理 DeepSeek Harness Web UI
+- 转发 `/api/*`
+- 转发 Harness 使用的两个 WebSocket 下行通道：
   - `/api/events.mux`
   - `/api/events.host`
-- can expose the gateway through a temporary public URL
+- 通过临时公网地址把本地网关暴露给手机端
 
-## What it does not do
+## 它不做什么
 
-- it does **not** change DeepSeek Harness code
-- it does **not** provide TLS by itself
-- it does **not** require a fixed public domain
+- 不修改 DeepSeek Harness 代码
+- 不自己提供 TLS 证书能力
+- 不要求固定公网域名
 
-## Configuration file
+## 配置文件
 
-Editable config file:
+可编辑配置文件：
 
 ```text
 remote-gateway/config.json
 ```
 
-If `auth.password` is `null`, the gateway generates a new random 6-digit password on every start.
+如果 `auth.password` 为 `null`，则每次启动都会生成一个新的随机 6 位密码。
 
-If you want a fixed password, set it manually in `config.json`.
+如果你想使用固定密码，直接在 `config.json` 中手动填写即可。
 
-## Example config
+## 配置示例
 
 ```json
 {
@@ -164,40 +152,40 @@ If you want a fixed password, set it manually in `config.json`.
 }
 ```
 
-## Important notes
+## 重要说明
 
-### Quick Tunnel mode
+### Quick Tunnel 模式
 
-The default tunnel mode is `quick`, which gives you a random `*.trycloudflare.com` URL.
+默认隧道模式是 `quick`，会生成一个随机的 `*.trycloudflare.com` 地址。
 
-When `upstream.loopbackMode` is left as `null`, the gateway automatically enables loopback-style upstream headers for Quick Tunnel mode. This avoids having to restart `dsh web` every time the random hostname changes.
+当 `upstream.loopbackMode` 保持为 `null` 时，网关会在 Quick Tunnel 模式下自动启用 loopback 风格的上游请求头。这样每次随机域名变化时，不需要反复重启 `dsh web`。
 
-This is convenient for temporary sharing and plugin-style usage, but it is not your final fixed-domain deployment shape.
+这非常适合临时分享和插件分发，但它不是固定域名部署的最终形态。
 
-### cloudflared binary
+### `cloudflared` 二进制
 
-By default, the gateway looks for:
+默认查找顺序如下：
 
-- Windows: `remote-gateway/bin/cloudflared.exe`
-- macOS/Linux: `remote-gateway/bin/cloudflared`
+- Windows：`remote-gateway/bin/cloudflared.exe`
+- macOS/Linux：`remote-gateway/bin/cloudflared`
 
-If the bundled file is missing, the gateway falls back to `cloudflared` from your system `PATH`.
+如果本地 `bin/` 目录里没有对应文件，网关会回退到系统 `PATH` 中的 `cloudflared`。
 
-You can also override it explicitly in `config.json` or via env.
+你也可以在 `config.json` 或环境变量中显式指定 `cloudflaredPath`。
 
-### macOS/Linux notes
+### macOS/Linux 说明
 
-- If you place the binary in `remote-gateway/bin/`, make sure it is executable:
+如果你把二进制放到 `remote-gateway/bin/` 里，记得先赋予可执行权限：
 
 ```bash
 chmod +x remote-gateway/bin/cloudflared
 ```
 
-- If your desktop environment does not provide `xdg-open`, the gateway still starts normally. It will just print the share page path and you can open it manually.
+如果你的桌面环境没有 `xdg-open`，网关仍然可以正常启动，只是不会自动打开分享页，你可以手动打开输出的分享页路径。
 
-## Environment overrides
+## 环境变量覆盖
 
-All major settings can still be overridden by environment variables:
+以下主要配置项都可以通过环境变量覆盖：
 
 - `REMOTE_GATEWAY_BIND_ADDRESS`
 - `REMOTE_GATEWAY_BIND_PORT`
@@ -214,78 +202,78 @@ All major settings can still be overridden by environment variables:
 - `REMOTE_GATEWAY_CLOUDFLARED_PATH`
 - `REMOTE_GATEWAY_SHARE_OPEN_ON_START`
 
-## Run
+## 直接运行
 
 ```bash
 node src/index.js
 ```
 
-If `share.openOnStart` is true, a local share card opens automatically. Otherwise, use:
+如果 `share.openOnStart` 为 `true`，会自动打开本地分享页。否则可以手动打开：
 
 ```text
 remote-gateway/runtime/share.html
 ```
 
-## One-click startup
+## 一键启动
 
-Use the launcher that matches your platform:
+按平台选择合适的启动入口：
 
-- Windows Explorer / CMD: `remote-gateway/start_Windows.bat`
-- Windows compatibility alias: `remote-gateway/start.bat`
-- Windows PowerShell: `remote-gateway/start.ps1`
-- macOS/Linux Terminal: `remote-gateway/start_Mac_or_Linux.sh`
-- macOS/Linux compatibility alias: `remote-gateway/start.sh`
-- macOS Finder double-click: `remote-gateway/start.command`
+- Windows 资源管理器 / CMD：`remote-gateway/start_Windows.bat`
+- Windows 兼容别名：`remote-gateway/start.bat`
+- Windows PowerShell：`remote-gateway/start.ps1`
+- macOS/Linux 终端：`remote-gateway/start_Mac_or_Linux.sh`
+- macOS/Linux 兼容别名：`remote-gateway/start.sh`
+- macOS Finder 双击：`remote-gateway/start.command`
 
-The launcher does three things for you:
+这些启动器会自动完成三件事：
 
-- checks that Node.js 22+ is available
-- auto-runs `npm install` on first launch if dependencies are missing
-- starts the gateway with the current `config.json`
+- 检查本机是否有 Node.js 22+
+- 如果缺依赖，首次启动时自动执行 `npm install`
+- 按当前 `config.json` 启动网关
 
-For macOS/Linux, make the shell launchers executable once:
+macOS/Linux 首次使用前，建议先执行：
 
 ```bash
 chmod +x remote-gateway/start.sh remote-gateway/start.command
 ```
 
-## Doctor
+## Doctor 自检
 
-Before first launch, you can run a quick environment check:
+首次启动前，建议先运行一次环境检查：
 
 ```bash
 npm run doctor
 ```
 
-It validates:
+它会检查：
 
-- Node.js version
-- `config.json` parseability
-- upstream reachability
-- `cloudflared` discovery
-- dependency presence
-- whether password mode is fixed or random
+- Node.js 版本
+- `config.json` 是否可解析
+- 上游 DSH 是否可达
+- `cloudflared` 是否能被发现
+- 依赖是否已安装
+- 当前密码模式是固定还是随机
 
-## Release-friendly layout
+## 适合发布的目录结构
 
-- runtime files are now ignored by `remote-gateway/.gitignore`
-- log files are ignored by `remote-gateway/.gitignore`
-- `remote-gateway/bin/README.md` explains how to bundle or replace `cloudflared`
-- `remote-gateway/INSTALL.md` gives first-run setup steps
-- `remote-gateway/FAQ.md` answers common deployment questions
-- `remote-gateway/RELEASE_CHECKLIST.md` provides a publish sanity check
+- 运行时文件已通过 `remote-gateway/.gitignore` 忽略
+- 日志文件已通过 `remote-gateway/.gitignore` 忽略
+- `remote-gateway/bin/README.md` 说明了如何替换或内置 `cloudflared`
+- `remote-gateway/INSTALL.md` 提供首次安装步骤
+- `remote-gateway/FAQ.md` 提供常见问题答案
+- `remote-gateway/RELEASE_CHECKLIST.md` 提供发布前检查项
 
-## Publish package
+## 发布到 GitHub / topics/dsh-plugin
 
-If you plan to publish this under `topics/dsh-plugin`, the minimum recommended flow is:
+如果你准备把它发布到 `topics/dsh-plugin`，推荐最少做这几步：
 
-1. Keep `README.md`, `INSTALL.md`, and `FAQ.md` together.
-2. Keep launcher filenames stable across releases.
-3. Run `npm run doctor` before packaging.
-4. Decide whether `cloudflared` is bundled in `bin/` or documented as an external dependency.
-5. For platform bundles, run `npm run release:bundle -- <target>`.
+1. 保持 `README.md`、`INSTALL.md`、`FAQ.md` 一起发布。
+2. 保持启动脚本文件名稳定，不要频繁变更。
+3. 发布前先跑一次 `npm run doctor`。
+4. 决定 `cloudflared` 是随仓库分发，还是作为外部依赖说明安装。
+5. 如果要按平台发包，执行 `npm run release:bundle -- <target>`。
 
-### Release bundle targets
+### 支持的发布目标
 
 - `windows-x64`
 - `macos-arm64`
@@ -293,34 +281,34 @@ If you plan to publish this under `topics/dsh-plugin`, the minimum recommended f
 - `linux-amd64`
 - `linux-arm64`
 
-### Release bundle commands
+### 发布包命令
 
 ```bash
 npm run release:bundle -- windows-x64
 npm run release:bundle -- --all --allow-missing
 ```
 
-Generated bundles are written to:
+生成的分发目录位于：
 
 ```text
 remote-gateway/dist/
 ```
 
-## Repo Structure
+## 仓库结构
 
-- `src/` gateway runtime
-- `scripts/` bootstrap and doctor helpers
-- `bin/` optional bundled `cloudflared`
-- `vendor/cloudflared/` source binaries for platform release bundles
-- `runtime/` generated share page and runtime artifacts
-- `INSTALL.md` first-run setup
-- `FAQ.md` common usage questions
-- `RELEASE_CHECKLIST.md` publish sanity checklist
+- `src/` 网关核心运行代码
+- `scripts/` 启动、自检、打包脚本
+- `bin/` 本地开发或直接运行时使用的 `cloudflared`
+- `vendor/cloudflared/` 按平台打包发布时使用的源二进制目录
+- `runtime/` 运行时生成的分享页和临时产物
+- `INSTALL.md` 安装说明
+- `FAQ.md` 常见问题
+- `RELEASE_CHECKLIST.md` 发布检查清单
 
-## Health endpoint
+## 健康检查接口
 
 ```text
 GET /_gateway/health
 ```
 
-This returns gateway state, upstream probe status, the current public URL, and the active password.
+该接口会返回网关状态、上游探测结果、当前公网 URL 和当前生效密码。
