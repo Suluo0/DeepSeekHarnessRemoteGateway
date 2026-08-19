@@ -8,15 +8,21 @@
 
 默认方案不需要。Quick Tunnel 会提供一个随机的临时公网地址。
 
-## 必须有自己的云服务吗？
+## 必须有云服务吗？
 
 基础使用不需要。默认方案是本地自托管，只是在本机上额外起一个网关和隧道。
 
-## 为什么每次启动密码都不一样？
+## 还需要输入密码吗？
 
-因为 `config.json` 默认把 `auth.password` 设为 `null`。在这个模式下，每次启动都会生成新的随机 6 位密码。
+不需要。本 fork 已移除密码登录体系，改为设备白名单：新设备访问时进入门禁页，在受控电脑的审批页（http://127.0.0.1:8788/_gateway/approve）点击「批准」后即可访问。
 
-如需固定密码，直接在 `config.json` 里写死即可。
+## 手机换了新设备，为什么又要批准？
+
+这是设计行为。每个设备有独立的 192-bit 随机 token，首次访问必须批准；换设备后新 token 需要重新批准。可以在管理页（http://127.0.0.1:8788/_gateway/admin）吊销任意已批准设备。
+
+## 待批条目会自动过期吗？
+
+会。待批条目 120 秒 TTL：设备停留在门禁页轮询时会自动续期，无人理会即过期；同时待批队列有 100 条容量上限，超出时淘汰最旧条目，防止被刷爆。
 
 ## 可以关闭隧道，只在本地使用吗？
 
@@ -30,7 +36,13 @@
 }
 ```
 
-## 如果我的 `dsh web` 不在 `3080` 端口怎么办？
+即使 cloudflared 缺失或隧道启动失败，网关照常启动，本地功能不受影响。
+
+## 管理端口（8788）公网能访问吗？
+
+不能。管理端口只监听 127.0.0.1，隧道只转发主端口（8787），审批/设备管理在物理网络上不可达。主端口上的 /_gateway/approve、/_gateway/admin、/_gateway/api/* 一律返回 403。
+
+## 如果我的 dsh web 不在 3080 端口怎么办？
 
 把配置改成实际使用的端口，例如：
 
@@ -42,26 +54,18 @@
 }
 ```
 
-## 为什么手机扫了二维码以后，还是要输入密码？
+## 可以把 cloudflared 直接放进仓库里吗？
 
-这是正常设计。二维码只负责打开公网访问地址，真正进入 DeepSeek Harness Web 之前，网关会先走一层登录页保护。
+可以。Windows 二进制已放在 bin/cloudflared.exe（本仓库内置）；也可安装到系统 PATH。具体规则见 bin/README.md。
 
-## 可以把 `cloudflared` 直接放进仓库里吗？
+## 本 fork 支持 macOS 和 Linux 吗？
 
-可以。直接放到 `remote-gateway/bin/` 即可，具体规则见 `remote-gateway/bin/README.md`。
+核心代码仍是跨平台 Node.js，但本 fork 精简了启动入口，只保留 Windows 启动脚本（start_Windows.bat / start.bat / start.ps1 / restart.bat）。macOS/Linux 用户可自行用 node scripts/start.js 启动。
 
-## 支持 macOS 和 Linux 吗？
+## 为什么 health 接口不再返回密码？
 
-支持。根据平台选择 `start_Mac_or_Linux.sh`、`start.sh` 或 `start.command` 即可。
+本 fork 移除了密码体系，/_gateway/health 只返回 ok / upstream / tunnel，不再泄露任何凭据。
 
-## 发布时可以把 `cloudflared` 一起打进包里吗？
+## 白名单文件被误删/损坏了怎么办？
 
-可以。当前已经支持按平台生成发布包，并把对应的 `cloudflared` 复制到每个平台包内的 `bin/` 目录。
-
-## Linux 和 macOS 的 `cloudflared` 一定要提交到仓库吗？
-
-不一定。当前推荐策略是：
-
-- Windows 版本可以继续保留在仓库里
-- Linux 和 macOS 二进制不提交到主分支
-- Linux 和 macOS 版本改为通过 GitHub Release 附件分发
+whitelist.json（runtime/whitelist.json）缺失或损坏时网关 fail-closed：所有设备都不可信，但管理端口（8788）仍可用，重新批准设备即可恢复访问。

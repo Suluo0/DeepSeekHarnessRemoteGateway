@@ -1,90 +1,81 @@
-import { existsSync } from 'node:fs'
-import { join, resolve } from 'node:path'
-import { spawn, spawnSync } from 'node:child_process'
+import { resolveGatewayConfig } from '../src/config.js'
+import { startRemoteGateway, startParentLivenessGuard } from '../src/index.js'
 
-const ROOT_DIR = resolve(import.meta.dirname, '..')
-const REQUIRED_NODE_MAJOR = 22
-
-function log(message) {
-  console.log(`[remote-gateway:start] ${message}`)
+function usage() {
+  console.log([
+    'Usage: node scripts/start.js',
+    '',
+    'Starts the gateway (tunnel + reverse proxy + device whitelist gate).',
+  ].join('\n'))
 }
 
-function fail(message) {
-  console.error(`[remote-gateway:start] ${message}`)
+function parseArgs(argv) {
+  if (argv.length === 0) return { command: 'start' }
+  if (argv.length === 1 && (argv[0] === '-h' || argv[0] === '--help')) return { command: 'help' }
+  return null
 }
 
-function ensureNodeVersion() {
-  const major = Number.parseInt(process.versions.node.split('.')[0] ?? '', 10)
-  if (Number.isNaN(major) || major < REQUIRED_NODE_MAJOR) {
-    throw new Error(`Node.js ${REQUIRED_NODE_MAJOR}+ is required, current version is ${process.versions.node}`)
+function startWatchdog({ port, healthPath, intervalMs }) {
+  const timer = setInterval(() => {
+    fetch(`http://127.0.0.1:${port}${healthPath}`)
+      .then((res) => { if (!res.ok) throw new Error('unhealthy') })
+      .catch((err) => {
+        console.error('[remote-gateway] health check failed, restarting:', err?.message || err)
+        process.exit(75)
+      })
+      .catch(() => {})
+  }, intervalMs)
+  timer.unref()
+}
+
+async function ensureDshUpstream(config) {
+  const probe = await fetch(config.upstream.origin.toString(), { method: 'HEAD', redirect: 'manual' })
+    .then((res) => ({ ok: true, status: res.status }))
+    .catch(() => ({ ok: false, status: 0 }))
+  if (probe.ok) return
+  if (!config.dsh.command) {
+    console.error('[remote-gateway] upstream is not running and no dsh.command is configured; refusing to launch a DSH instance on my own')
+    process.exit(1)
+  }
+  const { startManagedDsh } = await import('../src/dsh.js')
+  await startManagedDsh(config.dsh)
+  console.log('[remote-gateway] started DSH upstream on', config.upstream.origin)
+}
+
+function watchdogConfig(config) {
+  return {
+    port: config.server.bindPort,
+    healthPath: '/_gateway/health',
+    intervalMs: Number(process.env.REMOTE_GATEWAY_HEALTH_CHECK_MS ?? '30000'),
   }
 }
 
-function dependenciesInstalled() {
-  return existsSync(join(ROOT_DIR, 'node_modules', 'qrcode', 'package.json'))
-}
-
-function installDependencies() {
-  const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm'
-  log('Dependencies not found, running npm install...')
-
-  const result = spawnSync(npmCommand, ['install'], {
-    cwd: ROOT_DIR,
-    stdio: 'inherit',
-  })
-
-  if (result.error) {
-    throw new Error(`Failed to start ${npmCommand}: ${result.error.message}`)
-  }
-  if (result.status !== 0) {
-    throw new Error(`npm install failed with exit code ${String(result.status)}`)
-  }
-}
-
-function renderFailureHints() {
-  console.error('')
-  console.error('[remote-gateway:start] Common fixes:')
-  console.error('  1. Make sure DeepSeek Harness Web is already running on the configured upstream origin.')
-  console.error('  2. Make sure cloudflared exists in remote-gateway/bin/ or is installed in your PATH.')
-  console.error('  3. Check remote-gateway/config.json if you changed ports, upstream, or auth settings.')
-  console.error('')
+async function runStart(config) {
+  await ensureDshUpstream(config)
+  const gateway = await startRemoteGateway(process.env)
+  startWatchdog(watchdogConfig(config))
+  console.log(`[remote-gateway] local http://127.0.0.1:${config.server.bindPort}`)
+  console.log(`[remote-gateway] admin  http://127.0.0.1:${config.admin.port} (loopback only)`)
+  if (gateway.tunnel?.url) console.log(`[remote-gateway] tunnel ${gateway.tunnel.url}`)
 }
 
 async function main() {
-  ensureNodeVersion()
-
-  if (!dependenciesInstalled()) {
-    installDependencies()
+  // 父进程（dsh）先死 → 孤儿自清理：即使在「等待上游」阶段卡住也必须退出
+  startParentLivenessGuard()
+  const parsed = parseArgs(process.argv.slice(2))
+  if (!parsed) {
+    usage()
+    process.exit(1)
   }
-
-  log(`Starting from ${ROOT_DIR}`)
-
-  const child = spawn(process.execPath, [join(ROOT_DIR, 'src', 'index.js')], {
-    cwd: ROOT_DIR,
-    stdio: 'inherit',
-    env: process.env,
-    windowsHide: false,
-  })
-
-  child.once('error', (error) => {
-    fail(`Failed to start gateway: ${error.message}`)
-    renderFailureHints()
-    process.exitCode = 1
-  })
-
-  child.once('exit', (code, signal) => {
-    if (code === 0) {
-      process.exitCode = 0
-      return
-    }
-    fail(`Gateway exited unexpectedly (code=${String(code)}, signal=${String(signal)})`)
-    renderFailureHints()
-    process.exitCode = code ?? 1
-  })
+  if (parsed.command === 'help') {
+    usage()
+    return
+  }
+  const config = resolveGatewayConfig(process.env)
+  await runStart(config)
 }
 
-main().catch((error) => {
-  fail(error instanceof Error ? error.message : 'Unknown startup error')
-  renderFailureHints()
-  process.exitCode = 1
+main().catch((err) => {
+  console.error(err.message || err)
+  process.exit(1)
 })

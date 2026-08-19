@@ -95,6 +95,7 @@ export function proxyHttpRequest(request, response, config) {
     })
 
     upstreamRequest.on('error', reject)
+    response.on('error', () => upstreamRequest.destroy())
 
     if (request.method === 'GET' || request.method === 'HEAD') {
       upstreamRequest.end()

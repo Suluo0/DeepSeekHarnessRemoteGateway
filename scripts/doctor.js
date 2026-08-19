@@ -1,6 +1,5 @@
 import { access } from 'node:fs/promises'
-import { existsSync } from 'node:fs'
-import { isAbsolute, join } from 'node:path'
+import { isAbsolute } from 'node:path'
 import { resolveGatewayConfig } from '../src/config.js'
 
 const REQUIRED_NODE_MAJOR = 22
@@ -103,28 +102,9 @@ async function main() {
     printLine('PASS', 'cloudflared', 'not required because tunnel.enabled=false')
   }
 
-  const qrcodeInstalled = existsSync(join(config.paths.rootDir, 'node_modules', 'qrcode', 'package.json'))
-  printLine(
-    qrcodeInstalled ? 'PASS' : 'WARN',
-    'dependencies',
-    qrcodeInstalled ? 'installed' : 'missing, run start launcher or npm install',
-  )
+  printLine('PASS', 'dependencies', 'none (zero npm runtime dependencies)')
 
-  if (config.auth.password === null || config.auth.password === undefined) {
-    printLine('WARN', 'password', 'not resolved')
-  } else if (process.env.REMOTE_GATEWAY_PASSWORD) {
-    printLine('PASS', 'password', 'provided by environment variable')
-  } else {
-    const rawConfigText = existsSync(config.paths.configPath)
-      ? String(await (await import('node:fs/promises')).readFile(config.paths.configPath, 'utf8'))
-      : ''
-    const fixedInFile = /"password"\s*:\s*"(?:[^"\\]|\\.)+"/u.test(rawConfigText)
-    printLine(
-      fixedInFile ? 'PASS' : 'PASS',
-      'password mode',
-      fixedInFile ? 'fixed password from config.json' : 'random 6-digit password will be generated on start',
-    )
-  }
+  printLine('PASS', 'auth mode', 'device whitelist (password auth removed in this fork)')
 
   console.log('')
   console.log('Suggested next step:')
