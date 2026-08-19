@@ -1,0 +1,5 @@
+# dsh-remote-gateway bundle patch: mount the remote-gateway settings bridge.
+# The row loads the plugin by package name from the profile's node_modules.
+- insert:
+    - id: remote-gateway
+      name: 'dsh-remote-gateway'

@@ -32,7 +32,7 @@ const DEFAULT_CONFIG = {
     cloudflaredPath: null,
   },
   share: {
-    openOnStart: true,
+    openOnStart: true
   },
 }
 
@@ -139,7 +139,11 @@ export function resolveGatewayConfig(env = process.env) {
 
   const tunnelEnabled = boolFromValue(env.REMOTE_GATEWAY_TUNNEL_ENABLED, boolFromValue(merged.tunnel?.enabled, true))
   const tunnelMode = env.REMOTE_GATEWAY_TUNNEL_MODE ?? merged.tunnel?.mode ?? 'quick'
-
+  const bindPort = readInteger(
+    env.REMOTE_GATEWAY_BIND_PORT ?? merged.server?.bindPort,
+    8787,
+    'REMOTE_GATEWAY_BIND_PORT',
+  )
   const password = env.REMOTE_GATEWAY_PASSWORD
     ?? merged.auth?.password
     ?? generateDefaultPassword()
@@ -162,10 +166,14 @@ export function resolveGatewayConfig(env = process.env) {
     },
     server: {
       bindAddress: env.REMOTE_GATEWAY_BIND_ADDRESS ?? merged.server?.bindAddress ?? '127.0.0.1',
-      bindPort: readInteger(
-        env.REMOTE_GATEWAY_BIND_PORT ?? merged.server?.bindPort,
-        8787,
-        'REMOTE_GATEWAY_BIND_PORT',
+      bindPort,
+    },
+    admin: {
+      host: '127.0.0.1',
+      port: readInteger(
+        env.REMOTE_GATEWAY_ADMIN_PORT ?? null,
+        bindPort + 1,
+        'REMOTE_GATEWAY_ADMIN_PORT',
       ),
     },
     upstream: {
@@ -195,7 +203,7 @@ export function resolveGatewayConfig(env = process.env) {
       cloudflaredPath: resolveCloudflaredPath(env.REMOTE_GATEWAY_CLOUDFLARED_PATH ?? merged.tunnel?.cloudflaredPath ?? null),
     },
     share: {
-      openOnStart: boolFromValue(env.REMOTE_GATEWAY_SHARE_OPEN_ON_START, boolFromValue(merged.share?.openOnStart, true)),
+      openOnStart: boolFromValue(env.REMOTE_GATEWAY_SHARE_OPEN_ON_START, boolFromValue(merged.share?.openOnStart, true))
     },
   }
 }

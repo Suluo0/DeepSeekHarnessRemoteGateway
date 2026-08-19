@@ -3,10 +3,14 @@ runtime/*
 !runtime/.gitkeep
 dist/
 release-assets/
-vendor/cloudflared/windows-x64/cloudflared.exe
-vendor/cloudflared/macos-arm64/cloudflared
-vendor/cloudflared/macos-amd64/cloudflared
-vendor/cloudflared/linux-amd64/cloudflared
-vendor/cloudflared/linux-arm64/cloudflared
+src/runtime/
 *.log
 *.err.log
+
+# dsh-plugin（npm 插件包）构建产物
+dsh-plugin/node_modules/
+dsh-plugin/sidecar/
+dsh-plugin/*.tgz
+dsh-plugin/test-run.log
+
+test-output.txt

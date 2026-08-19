@@ -1,124 +1,105 @@
 # 安装说明
 
-这份文档适合首次从干净目录启动 `DSH Remote Gateway` 的场景。
+本 fork 提供两种使用方式：**npm 插件包一键安装**（推荐，开箱即用）或**源码手动运行**。
 
-## 前置条件
+## 方式一：npm 插件包安装（推荐）
 
-- 本地已经启动 `DeepSeek Harness Web`
-- 已安装 `Node.js 22+`
-- 已准备 `cloudflared`
-  - 可以放在 `remote-gateway/bin/`
-  - 也可以安装到系统 `PATH`
+前置条件：
 
-默认上游地址为：
+- 本地已启动 DeepSeek Harness Web（默认 http://127.0.0.1:3080）
+- 已安装 Node.js 22+
+- 已安装 dsh（npm 全局）
 
-```text
-http://127.0.0.1:3080
+安装：
+
+```bash
+dsh plugin --profile web add dsh-remote-gateway
 ```
 
-如果 `dsh web` 不使用这个端口，请修改 `config.json`。
+插件首次启动会自动把随包携带的白名单版 sidecar 网关部署到 `~/.dsh/remote-gateway`（含 bin/cloudflared.exe，无需手动准备），并接管其生命周期（随 dsh 启停、崩溃自动重启）。之后在 DSH 设置页「远程网关」段审批设备即可。
 
+## 方式二：源码手动运行
+
+前置条件：
+
+- 本地已经启动 DeepSeek Harness Web（默认 http://127.0.0.1:3080）
+- 已安装 Node.js 22+
+- 已准备 cloudflared
+  - Windows 可放在 bin/（本仓库已内置 bin/cloudflared.exe）
+  - 也可以安装到系统 PATH，或在 config.json / 环境变量指定 cloudflaredPath
 ## 1. 先检查配置文件
 
-打开：
+打开 config.json，重点确认：
 
-```text
-remote-gateway/config.json
-```
+- upstream.origin（默认 http://127.0.0.1:3080）
+- tunnel.enabled（默认 true）
+- share.openOnStart（默认 true）
 
-重点确认以下字段：
+注意：auth.* 字段（password / sessionSecret 等）为本 fork 的兼容残留，已无任何消费方，密码登录体系已移除，可忽略。
 
-- `upstream.origin`
-- `tunnel.enabled`
-- `share.openOnStart`
-- `auth.password`
+> 提示：npm 安装方式下无需手动准备 config.json / cloudflared，插件会自动部署带默认配置的 sidecar。
+## 2. 准备 cloudflared
 
-如果 `auth.password` 为 `null`，每次启动都会自动生成一个新的随机 6 位密码。
+方式 A：使用仓库内置二进制
 
-## 2. 准备 `cloudflared`
+- Windows：bin/cloudflared.exe（已内置）
 
-方式 A：直接放二进制到项目内
+方式 B：全局安装（确保命令行可直接执行 cloudflared）
 
-- Windows：`remote-gateway/bin/cloudflared.exe`
-- macOS/Linux：`remote-gateway/bin/cloudflared`
-
-方式 B：全局安装
-
-- 确保命令行里可以直接执行 `cloudflared`
-
-如果需要按平台生成发布包，请把对应平台二进制放到：
-
-```text
-remote-gateway/vendor/cloudflared/<target>/
-```
-
-然后执行：
-
-```bash
-npm run release:bundle -- <target>
-```
-
-如果不希望把 macOS/Linux 的二进制直接放在仓库主分支里，推荐继续执行：
-
-```bash
-npm run release:assets -- <target>
-```
-
-这样会把已经生成好的平台目录压成 zip，适合上传到 GitHub Release 附件。
+本 fork 不再提供按平台生成发布包 / GitHub Release 附件流程（相关脚本已移除）。
 
 ## 3. 运行自检
 
-```bash
 npm run doctor
-```
 
-理想状态下，应看到以下检查通过：
+理想状态下应看到：
 
 - Node.js 版本正常
-- `config.json` 能正确读取
+- config.json 能正确读取
 - 上游 DSH 可访问
-- `cloudflared` 能被发现
+- cloudflared 能被发现（或 tunnel.enabled=false 时提示不需要）
 
 ## 4. 启动网关
 
-根据当前平台选择一个启动入口：
+Windows 用户选择任一入口：
 
-- Windows 资源管理器：`start_Windows.bat`
-- Windows 兼容别名：`start.bat`
-- PowerShell：`start.ps1`
-- macOS/Linux 终端：`./start_Mac_or_Linux.sh`
-- macOS/Linux 兼容别名：`./start.sh`
-- macOS Finder：`start.command`
+- start_Windows.bat（资源管理器双击）
+- start.bat（兼容别名）
+- start.ps1（PowerShell）
+- node scripts/start.js（含健康检查看门狗，失败自动重启）
+- restart.bat（重启并把新的公网 URL 复制到剪贴板）
 
-首次启动时，如果缺少 npm 依赖，启动器会自动执行安装。
+## 5. 在手机端访问（设备审批流程）
 
-## 5. 在手机端访问
+1. 手机打开启动后输出的公网 URL，进入「此设备尚未获得授权」门禁页。
+2. 电脑打开 http://127.0.0.1:8788/_gateway/approve（管理端口默认 = 主端口 + 1，仅本机可访问）。
+3. 点击「批准」，手机端门禁页 3 秒轮询，批准后自动进入 DeepSeek Harness Web。
+4. 换设备 / 丢设备：http://127.0.0.1:8788/_gateway/admin 吊销对应设备。
 
-启动成功后，网关会输出：
-
-- 一个临时公网 URL
-- 一个 6 位密码
-- 一份终端二维码
-- 一个本地分享页路径
-
-如果桌面自动打开成功，可直接用手机扫描分享页上的二维码进入。
+注意：管理端口只监听 127.0.0.1，公网（隧道）物理上不可达；主端口上的管理路径一律返回 403。
 
 ## 常见首启问题
 
-### 提示 `Node.js 22+ was not found in PATH`
+### 提示 Node.js 22+ was not found in PATH
 
-说明本机没有可用的 Node.js，安装 `Node.js 22` 或更高版本后再试。
+说明本机没有可用的 Node.js，安装 Node.js 22 或更高版本后再试。
 
-### 提示 `cloudflared not found`
+### 提示 cloudflared not found
 
-说明网关没有找到 `cloudflared`：
+说明网关没有找到 cloudflared：
 
-- 要么把文件放到 `bin/`
-- 要么安装到系统 `PATH`
+- 要么使用 bin/ 下内置的二进制
+
+- 要么安装到系统 PATH
+
+- 要么在 config.json / 环境变量显式指定 cloudflaredPath
+
+注意：即使 cloudflared 缺失，网关照常启动，本地功能（http://127.0.0.1:8787）不受影响，只是没有公网隧道。
 
 ### 上游探测失败
 
 说明网关访问不到 DSH：
 
-- 确认 `dsh web` 已经启动
-- 确认 `upstream.origin` 配置的是正确的本地地址和端口
+- 确认 dsh web 已经启动
+
+- 确认 upstream.origin 配置的是正确的本地地址和端口
