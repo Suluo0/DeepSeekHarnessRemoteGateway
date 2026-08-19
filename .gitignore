@@ -6,3 +6,11 @@ release-assets/
 src/runtime/
 *.log
 *.err.log
+
+# dsh-plugin（npm 插件包）构建产物
+dsh-plugin/node_modules/
+dsh-plugin/sidecar/
+dsh-plugin/*.tgz
+dsh-plugin/test-run.log
+
+test-output.txt

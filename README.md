@@ -71,14 +71,28 @@
 - 主端口上的 /_gateway/approve、/_gateway/admin、/_gateway/api/* 一律返回 403，即使请求来自 loopback —— 管理面只在独立管理端口存在。
 - loopback 判定只信 socket 对端地址（isLoopbackAddress），绝不信任 X-Forwarded-For 等可伪造头。
 
-## 30 秒上手
+## 一键安装（npm）
+
+本仓库同时发布 npm 插件包 `dsh-remote-gateway`（含白名单版 sidecar 网关 + DSH 设置页「远程网关」段，开箱即用）：
+
+```bash
+dsh plugin --profile web add dsh-remote-gateway
+```
+
+装完后：
+
+1. 插件首次启动自动把 sidecar 部署到 `~/.dsh/remote-gateway`（已存在则不覆盖，保留你的 config.json / 白名单）。
+2. DSH 设置页出现「远程网关」段：审批待批设备、管理白名单、启停网关、autoStart 开关。
+3. 手机打开公网 URL -> 进入「此设备尚未获得授权」门禁页。
+4. 设置页点「批准」-> 手机自动进入（门禁页 3s 轮询）。
+5. 换设备/丢设备：设置页或 http://127.0.0.1:8788/_gateway/admin 吊销对应设备。
+
+## 源码手动运行
 
 1. 本地启动 dsh web，确认 http://127.0.0.1:3080 可访问。
 2. 准备 cloudflared（放 bin/ 或系统 PATH，也可在 config.json / 环境变量指定 cloudflaredPath）。
 3. 启动：node scripts/start.js（或 start_Windows.bat / start.ps1 / start.bat；restart.bat 可重启并把新公网 URL 复制到剪贴板）。
-4. 手机打开输出的公网 URL -> 进入「此设备尚未获得授权」门禁页。
-5. 电脑打开 http://127.0.0.1:8788/_gateway/approve -> 点击「批准」-> 手机自动进入（门禁页 3s 轮询，批准后自动刷新）。
-6. 换设备/丢设备：http://127.0.0.1:8788/_gateway/admin 吊销对应设备。
+4. 管理面：http://127.0.0.1:8788/_gateway/approve（审批）、/_gateway/admin（设备管理）。
 
 ## 配置文件
 
@@ -121,8 +135,8 @@ npm test
 - bin/ 本地 cloudflared（Windows）
 - runtime/ 运行时产物（whitelist.json 等，已 gitignore）
 - restart.bat Windows 重启 + 复制公网 URL 到剪贴板
+- dsh-plugin/ npm 插件包（lib/ 服务端+设置页 UI、cordis.patch.yml、scripts/build-sidecar.mjs 打包脚本、test/）
 - README.md / INSTALL.md / FAQ.md / DELIVERY.md 文档
-
 ## 当前限制
 
 - 远程状态下无法直接从手机端打开本地尚未打开的工作区；切换工作区仍需先在电脑端打开目标工作区。

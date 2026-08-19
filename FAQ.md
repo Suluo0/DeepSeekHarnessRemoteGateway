@@ -68,4 +68,16 @@
 
 ## 白名单文件被误删/损坏了怎么办？
 
+
+## 怎么安装？（npm 一键装）
+
+```bash
+dsh plugin --profile web add dsh-remote-gateway
+```
+
+插件首次启动自动把随包携带的 sidecar 部署到 ~/.dsh/remote-gateway（含 cloudflared，开箱即用），并在 DSH 设置页出现「远程网关」段。已安装过则不覆盖，保留你的 config.json 与白名单。
+
+## 升级插件后 sidecar 会更新吗？
+
+不会覆盖。ensureGatewayInstalled 只在目标目录缺少 scripts/start.js 时才部署/补全，已存在则跳过（reason=already-installed），你的配置和白名单永远安全。
 whitelist.json（runtime/whitelist.json）缺失或损坏时网关 fail-closed：所有设备都不可信，但管理端口（8788）仍可用，重新批准设备即可恢复访问。

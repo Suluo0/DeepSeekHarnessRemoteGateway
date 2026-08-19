@@ -21,9 +21,12 @@
 - package.json：0.2.0，移除 qrcode 依赖（无任何 npm 运行时依赖），新增 npm test
 - 新增 restart.bat：一键重启并把新公网 URL 复制到剪贴板
 - 新增 test/gateway.test.mjs：10 项验收测试，全绿
+- 新增 dsh-plugin/ npm 插件包：DSH 设置页「远程网关」段（审批/白名单/生命周期 UI）+ ensureGatewayInstalled（首次运行把包内 sidecar 部署到 ~/.dsh/remote-gateway，开箱即用）+ scripts/build-sidecar.mjs（pack 前复制 sidecar 进包）
+- 发布形态：npm registry（dsh-remote-gateway），用户 dsh plugin --profile web add dsh-remote-gateway 一行安装（不走 GitHub Release）
 
 ## 运行方式
 
+- npm 安装（推荐）：dsh plugin --profile web add dsh-remote-gateway，插件自动部署 sidecar 到 ~/.dsh/remote-gateway 并管理生命周期
 - 手动：cd C:\Users\suluo\.dsh\remote-gateway && node src\index.js
 - 开机自启：Startup 文件夹 dsh-remote-gateway.vbs（隐藏窗口，日志 runtime/gateway.log）
 - 主端口 8787（cloudflared quick tunnel 转发的就是它）；管理端口 8788（仅本机）
@@ -34,7 +37,6 @@
 1. 手机打开隧道 URL -> 门禁页显示「此设备尚未获得授权」
 2. 电脑打开审批页（或 DSH 设置页 -> 远程网关）-> 点击「批准」-> 设备入白名单
 3. 换手机/丢手机 -> 管理页吊销对应设备即可
-
 ## 仓库精简（相对上游）
 
 本 fork 删除了与插件运行无关的上游文件：

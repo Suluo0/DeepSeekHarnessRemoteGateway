@@ -1,15 +1,32 @@
 # 安装说明
 
-这份文档适合首次从干净目录启动本 fork（白名单改造版）的场景。
+本 fork 提供两种使用方式：**npm 插件包一键安装**（推荐，开箱即用）或**源码手动运行**。
 
-## 前置条件
+## 方式一：npm 插件包安装（推荐）
+
+前置条件：
+
+- 本地已启动 DeepSeek Harness Web（默认 http://127.0.0.1:3080）
+- 已安装 Node.js 22+
+- 已安装 dsh（npm 全局）
+
+安装：
+
+```bash
+dsh plugin --profile web add dsh-remote-gateway
+```
+
+插件首次启动会自动把随包携带的白名单版 sidecar 网关部署到 `~/.dsh/remote-gateway`（含 bin/cloudflared.exe，无需手动准备），并接管其生命周期（随 dsh 启停、崩溃自动重启）。之后在 DSH 设置页「远程网关」段审批设备即可。
+
+## 方式二：源码手动运行
+
+前置条件：
 
 - 本地已经启动 DeepSeek Harness Web（默认 http://127.0.0.1:3080）
 - 已安装 Node.js 22+
 - 已准备 cloudflared
   - Windows 可放在 bin/（本仓库已内置 bin/cloudflared.exe）
   - 也可以安装到系统 PATH，或在 config.json / 环境变量指定 cloudflaredPath
-
 ## 1. 先检查配置文件
 
 打开 config.json，重点确认：
@@ -20,6 +37,7 @@
 
 注意：auth.* 字段（password / sessionSecret 等）为本 fork 的兼容残留，已无任何消费方，密码登录体系已移除，可忽略。
 
+> 提示：npm 安装方式下无需手动准备 config.json / cloudflared，插件会自动部署带默认配置的 sidecar。
 ## 2. 准备 cloudflared
 
 方式 A：使用仓库内置二进制
